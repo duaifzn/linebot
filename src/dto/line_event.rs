@@ -1,6 +1,6 @@
-use rocket::serde::{Deserialize};
+use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Event{
     #[serde(rename(deserialize = "type"))]
@@ -17,7 +17,7 @@ pub struct Event{
     pub delivery_context: DeliveryContext
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Message{
     #[serde(rename(deserialize = "type"))]
@@ -28,14 +28,14 @@ pub struct Message{
     pub content_provider: Option<Povider>,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Povider{
     #[serde(rename(deserialize = "type"))]
     pub povider_type: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Source{
     #[serde(rename(deserialize = "type"))]
@@ -47,7 +47,7 @@ pub struct Source{
 
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct DeliveryContext{
     #[serde(rename(deserialize = "isRedelivery"))]
