@@ -5,11 +5,11 @@ use rocket::serde::{Deserialize, Serialize};
 pub struct Event{
     #[serde(rename(deserialize = "type"))]
     pub event_type: String,
-    pub message: Message,
+    pub message: Option<Message>,
     pub timestamp: u128,
     pub source: Source,
     #[serde(rename(deserialize = "replyToken"))]
-    pub reply_token: String,
+    pub reply_token: Option<String>,
     pub mode: String,
     #[serde(rename(deserialize = "webhookEventId"))]
     pub webhook_event_id: String,

@@ -1,6 +1,5 @@
 use rocket::serde::{Deserialize, Serialize};
 use crate::dto::line_event::Event;
-
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct WebhookDto{

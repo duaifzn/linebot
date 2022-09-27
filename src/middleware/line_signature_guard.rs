@@ -1,11 +1,14 @@
 use crate::dto::line_dto::WebhookDto;
 use crate::util::line_signature::create_signature;
+use crate::config::Config;
 use rocket::data::{self, Data, FromData, Outcome};
 use rocket::http::Status;
 use rocket::request::Request;
 use rocket::serde::json::serde_json;
 
-const SECRET: &str = "";
+lazy_static!(
+    static ref CONFIG: Config<'static> = Config::load();
+);
 
 #[derive(Debug)]
 pub enum BodyError {
@@ -23,7 +26,7 @@ impl<'r> FromData<'r> for WebhookDto {
             return Outcome::Failure((Status::ExpectationFailed, BodyError::Invalid))
         }
         let body = result.unwrap();
-        let sign1 = create_signature(SECRET.to_string(), body.to_string());
+        let sign1 = create_signature(CONFIG.secret.to_string(), body.to_string());
         match req.headers().get_one("x-line-signature") {
             Some(sign) => {
                 if sign.to_string() != sign1{

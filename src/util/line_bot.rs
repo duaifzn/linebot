@@ -53,9 +53,12 @@ impl LineBot {
             .await?;
         Ok(res)
     }
-    pub async fn reply_msg(&self, reply_token: &str, msg: FlexMessage) {
+    pub async fn reply_msg<T: rocket::serde::Serialize>(&self, reply_token: Option<String>, msg: T) {
+        if reply_token.is_none(){
+            return
+        }
         let body = ReplyDto {
-            reply_token: reply_token.to_string(),
+            reply_token: reply_token.unwrap().to_string(),
             messages: vec![msg],
         };
 
@@ -71,8 +74,8 @@ impl LineBot {
             .send()
             .await;
     }
-    pub async fn push_msg(&self, user_id: &str, msg: FlexMessage) {
-        let body: PushDto<FlexMessage> = PushDto {
+    pub async fn push_msg<T: rocket::serde::Serialize>(&self, user_id: &str, msg: T) {
+        let body = PushDto {
             to: user_id.to_string(),
             messages: vec![msg],
         };
@@ -191,5 +194,8 @@ impl LineBot {
             .map(|t| Self::custom_one_btn_layout(t))
             .collect();
         btns
+    }
+    pub fn maintain_text_layout() ->Component{
+        Component::new_text("維護中", None, None)
     }
 }
