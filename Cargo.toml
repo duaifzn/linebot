@@ -13,3 +13,6 @@ sha2 = "0.10.6"
 base64 = "0.13.0"
 lazy_static = "1.4.0"
 dotenv = "0.15.0"
+redis = { version = "0.22.1", features = ["tokio-comp"] }
+diesel = { version = "2.0.2", features = ["mysql", "time", "r2d2"] }
+r2d2 = "0.8.10"

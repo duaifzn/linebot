@@ -8,6 +8,8 @@ use std::env;
 pub struct Config<'a> {
     pub access_token: Cow<'a ,str>,
     pub secret: Cow<'a ,str>,
+    pub redis_url: Cow<'a ,str>,
+    pub mysql_url: Cow<'a ,str>,
 }
 
 impl Config<'static> {

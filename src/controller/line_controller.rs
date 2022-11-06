@@ -1,23 +1,71 @@
+use crate::database_pool::DatabasePool;
 use crate::dto::line_dto::WebhookDto;
 use crate::dto::linebot_process::{LineBotProcess, PeriodOfOperationReport, SumOfOperationReport};
+use crate::dto::redis_dto::RedisSetName;
+use crate::model::email::{Email, NewEmail};
 use crate::util::line_bot::LineBot;
+use crate::util::redis::Redis;
+use crate::service::email_service;
 use rocket::State;
 
 #[post("/webhook", data = "<body>")]
-pub async fn webhook(line_bot: &State<LineBot>, body: WebhookDto) {
+pub async fn webhook(
+    line_bot: &State<LineBot>,
+    db_pool: &State<DatabasePool>,
+    redis: &State<Redis>,
+    body: WebhookDto,
+) {
     if body.events[0].message.is_none() {
         return;
     };
+
+    let check_userid = redis
+        .sismember(
+            &RedisSetName::ValidUserId.to_string(),
+            &body.events[0].source.user_id.as_ref().unwrap(),
+        )
+        .await;
+    match check_userid {
+        Ok(_) => {}
+        Err(_) => return,
+    }
+
     match body.events[0].message.clone().unwrap().text {
         Some(t) => {
             match t {
                 i if i.contains(&LineBotProcess::Hello.to_string()) => {
-                    let a = line_bot.many_quetions_layout();
+                    let a = line_bot.hello_layout();
                     let _ = line_bot
                         .reply_msg(body.events[0].reply_token.clone(), a)
                         .await;
                 }
-                i if i == PeriodOfOperationReport::DayOfClassOfCustomerServiceAnalysis.to_string() => {
+                i if i == LineBotProcess::PartTimer.to_string() => {
+                    let a = line_bot.hello_layout();
+                    let _ = line_bot
+                        .reply_msg(body.events[0].reply_token.clone(), a)
+                        .await;
+                }
+                i if i == LineBotProcess::PeriodOfOperationReport.to_string() => {
+                    let a = line_bot.period_of_operation_report_layout();
+                    let _ = line_bot
+                        .reply_msg(body.events[0].reply_token.clone(), a)
+                        .await;
+                }
+                i if i == LineBotProcess::Presentation.to_string() => {
+                    let a = line_bot.presentation_layout();
+                    let _ = line_bot
+                        .reply_msg(body.events[0].reply_token.clone(), a)
+                        .await;
+                }
+                i if i == LineBotProcess::SumOfOperationReport.to_string() => {
+                    let a = line_bot.sum_of_operation_report_layout();
+                    let _ = line_bot
+                        .reply_msg(body.events[0].reply_token.clone(), a)
+                        .await;
+                }
+                i if i
+                    == PeriodOfOperationReport::DayOfClassOfCustomerServiceAnalysis.to_string() =>
+                {
                     let a = LineBot::maintain_text_layout();
                     let _ = line_bot
                         .reply_msg(body.events[0].reply_token.clone(), a)

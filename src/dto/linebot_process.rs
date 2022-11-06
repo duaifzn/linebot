@@ -3,12 +3,20 @@ use core::fmt;
 #[derive(Debug, Clone, Copy)]
 pub enum LineBotProcess{
     Hello,
+    PartTimer,
+    PeriodOfOperationReport,
+    SumOfOperationReport,
+    Presentation,
 }
 
 impl fmt::Display for LineBotProcess{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             LineBotProcess::Hello => write!(f, "安安"),
+            LineBotProcess::PeriodOfOperationReport => write!(f, "定期營運報表"),
+            LineBotProcess::SumOfOperationReport => write!(f, "累計營運報表"),
+            LineBotProcess::Presentation => write!(f, "成果展報表"),
+            LineBotProcess::PartTimer => write!(f, "工讀生"),
         }
     }
 }

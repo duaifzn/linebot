@@ -92,9 +92,19 @@ impl LineBot {
             .send()
             .await;
     }
-    pub fn many_quetions_layout(&self) -> FlexMessage {
+    pub fn hello_layout(&self) ->FlexMessage{
+        FlexMessage::Flex(Flex{
+            alt_text: "hello layout.".to_string(),
+            contents: Container::Carousel(Carousel {
+                contents: vec![
+                    Self::custom_bubble_and_btn_layout()
+                ],
+            }),
+        })
+    }
+    pub fn period_of_operation_report_layout(&self) -> FlexMessage {
         FlexMessage::Flex(Flex {
-            alt_text: "many quetions layout.".to_string(),
+            alt_text: "period of operation report layout.".to_string(),
             contents: Container::Carousel(Carousel {
                 contents: vec![
                     Self::custom_bubble_layout(
@@ -121,6 +131,15 @@ impl LineBot {
                             "點數管控表-核銷情形",
                         ],
                     ),
+                ],
+            }),
+        })
+    }
+    pub fn sum_of_operation_report_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "sum of operation report layout.".to_string(),
+            contents: Container::Carousel(Carousel {
+                contents: vec![
                     Self::custom_bubble_layout(
                         "累計營運報表",
                         vec![
@@ -130,6 +149,19 @@ impl LineBot {
                             "受補助企業分布",
                             "客服及諮詢服務狀況",
                         ],
+                    ),
+                ],
+            }),
+        })
+    }
+    pub fn presentation_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "presentation layout.".to_string(),
+            contents: Container::Carousel(Carousel {
+                contents: vec![
+                    Self::custom_bubble_layout(
+                        "累計營運報表",
+                        vec![],
                     ),
                 ],
             }),
@@ -173,7 +205,49 @@ impl LineBot {
             footer: None,
         })
     }
-    pub fn custom_one_btn_layout(text: &str) -> Component {
+    pub fn custom_bubble_and_btn_layout() -> Container {
+        Container::Bubble(Bubble {
+            hero: None,
+            header: Some(Component::new_box(
+                "vertical",
+                vec![Component::new_text("報表", Some("center"), None)],
+                None,
+                None,
+                None,
+                Some("10px"),
+            )),
+            body: Some(Component::new_box(
+                "vertical",
+                vec![
+                    Component::new_image(
+                        "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                        "full",
+                        "center",
+                        "1:2",
+                        "cover",
+                    ),
+                    Component::new_box(
+                        "vertical",
+                        vec![
+                            // Self::custom_one_msg_btn_layout("定期營運報表"),
+                            // Self::custom_one_msg_btn_layout("累計營運報表"),
+                            Self::custom_one_uri_btn_layout("成果展報表", "https://pmotcloud.kyart.tw/"),
+                        ],
+                        Some("absolute"),
+                        Some("100%"),
+                        None,
+                        None,
+                    ),
+                ],
+                None,
+                None,
+                Some("425px"),
+                Some("0px"),
+            )),
+            footer: None,
+        })
+    }
+    pub fn custom_one_msg_btn_layout(text: &str) -> Component {
         Component::new_box(
             "vertical",
             vec![Component::new_button(
@@ -188,10 +262,25 @@ impl LineBot {
             Some("10px"),
         )
     }
+    pub fn custom_one_uri_btn_layout(text: &str, uri: &str) -> Component {
+        Component::new_box(
+            "vertical",
+            vec![Component::new_button(
+                "secondary",
+                None,
+                Some("sm"),
+                Action::new_uri(text, uri),
+            )],
+            Some("relative"),
+            Some("100%"),
+            None,
+            Some("10px"),
+        )
+    }
     pub fn custom_many_btn_layout(texts: Vec<&str>) -> Vec<Component> {
         let btns: Vec<Component> = texts
             .into_iter()
-            .map(|t| Self::custom_one_btn_layout(t))
+            .map(|t| Self::custom_one_msg_btn_layout(t))
             .collect();
         btns
     }

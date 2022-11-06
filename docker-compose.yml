@@ -11,6 +11,31 @@ services:
     networks:
       - linebot
 
+  linebot_redis:
+    container_name: linebot_redis
+    image: redis:6.2.7
+    volumes:
+      - "./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf"
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    ports:
+      - "6380:6379"
+    networks:
+      - linebot
+
+    linebot_mysql:
+      container_name: linebot_mysql
+      image: mysql:8.0.31
+      environment:
+        - "MYSQL_ROOT_PASSWORD=!qaz@wsx123"
+        - "MYSQL_DATABASE=linebot"
+        - "MYSQL_USER=user"
+        - "MYSQL_PASSWORD=!qaz@wsx123"
+      volumes:
+        - "./docker/mysql:/var/lib/mysql"
+      ports:
+        - "3306:3306"
+      networks:
+        - linebot  
 networks:
   linebot:
     name: linebot
