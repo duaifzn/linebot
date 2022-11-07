@@ -53,13 +53,13 @@ impl LineBot {
             .await?;
         Ok(res)
     }
-    pub async fn reply_msg<T: rocket::serde::Serialize>(&self, reply_token: Option<String>, msg: T) {
+    pub async fn reply_msg<T: rocket::serde::Serialize>(&self, reply_token: Option<String>, msg: Vec<T>) {
         if reply_token.is_none(){
             return
         }
         let body = ReplyDto {
             reply_token: reply_token.unwrap().to_string(),
-            messages: vec![msg],
+            messages: msg,
         };
 
         let client = Client::new();
@@ -74,10 +74,10 @@ impl LineBot {
             .send()
             .await;
     }
-    pub async fn push_msg<T: rocket::serde::Serialize>(&self, user_id: &str, msg: T) {
+    pub async fn push_msg<T: rocket::serde::Serialize>(&self, user_id: &str, msg: Vec<T>) {
         let body = PushDto {
             to: user_id.to_string(),
-            messages: vec![msg],
+            messages: msg,
         };
 
         let client = Client::new();

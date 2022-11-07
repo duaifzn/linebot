@@ -1,1 +1,5 @@
 /target
+/docker
+.env.local
+docker-compose.local.yml
+docker-compose.yml

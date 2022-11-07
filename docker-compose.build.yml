@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  linebot_server:
+    container_name: linebot_server
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: linebot_linebot_server:1.0.0
+    ports: 
+      - "8000:8000"

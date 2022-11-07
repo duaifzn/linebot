@@ -1,14 +1,14 @@
 use diesel::prelude::*;
-use rocket::serde::Deserialize;
+use rocket::{serde::Deserialize, time::Time};
 use crate::schema::email::emails;
 use std::time::SystemTime;
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, PartialEq, Debug)]
 pub struct Email{
     pub id: u32,
     pub email: String,
-    pub create_at: SystemTime,
-    pub update_at: SystemTime,
+    pub create_at: Time,
+    pub update_at: Time,
 }
 
 #[derive(Insertable, Deserialize, Debug)]
