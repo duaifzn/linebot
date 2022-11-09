@@ -7,6 +7,7 @@ pub enum LineBotMessage{
     PeriodOfOperationReport,
     SumOfOperationReport,
     Presentation,
+    Logout,
 }
 
 impl fmt::Display for LineBotMessage{
@@ -17,6 +18,7 @@ impl fmt::Display for LineBotMessage{
             LineBotMessage::SumOfOperationReport => write!(f, "累計營運報表"),
             LineBotMessage::Presentation => write!(f, "成果展報表"),
             LineBotMessage::PartTimer => write!(f, "工讀生"),
+            LineBotMessage::Logout => write!(f, "登出"),
         }
     }
 }

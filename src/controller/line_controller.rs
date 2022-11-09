@@ -103,6 +103,42 @@ pub async fn webhook(
                         .reply_msg(body.events[0].reply_token.clone(), vec![a])
                         .await;
                 }
+                i if i == LineBotMessage::Logout.to_string() => {
+                    let logout = redis
+                        .srem(
+                            &LineBotProcess::ValidUserId.to_string(),
+                            &body.events[0].source.user_id.as_ref().unwrap(),
+                        )
+                        .await;
+                    match logout {
+                        Ok(result) => match result {
+                            true => {
+                                let _ = line_bot
+                                .reply_msg(
+                                    body.events[0].reply_token.clone(),
+                                    vec![Message::Text(Text::new("登出成功"))],
+                                )
+                                .await;
+                            },
+                            false => {
+                                let _ = line_bot
+                                .reply_msg(
+                                    body.events[0].reply_token.clone(),
+                                    vec![Message::Text(Text::new("登出失敗"))],
+                                )
+                                .await;
+                            },
+                        },
+                        Err(_) => {
+                            let _ = line_bot
+                                .reply_msg(
+                                    body.events[0].reply_token.clone(),
+                                    vec![Message::Text(Text::new("登出失敗"))],
+                                )
+                                .await;
+                        }
+                    }
+                }
                 i if i
                     == PeriodOfOperationReport::DayOfClassOfCustomerServiceAnalysis.to_string() =>
                 {

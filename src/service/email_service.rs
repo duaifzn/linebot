@@ -1,8 +1,7 @@
 use crate::database_pool::DatabasePool;
 use crate::model::email::{Email, NewEmail};
-use crate::schema;
+use crate::schema::email::emails;
 use diesel::prelude::*;
-use diesel::*;
 use rocket::State;
 
 pub fn insert_one_email(db_pool: &State<DatabasePool>, email: &str) -> Result<bool, String> {
@@ -10,7 +9,7 @@ pub fn insert_one_email(db_pool: &State<DatabasePool>, email: &str) -> Result<bo
     match temp {
         Ok(mut conn) => {
             let new_email = NewEmail { email: email };
-            let result = diesel::insert_into(schema::email::emails::table)
+            let result = diesel::insert_into(emails::table)
                 .values(new_email)
                 .execute(&mut conn);
             match result {
@@ -26,9 +25,9 @@ pub fn find_one_email(db_pool: &State<DatabasePool>, email: &str) -> Result<bool
     let temp = db_pool.pool.get();
     match temp {
         Ok(mut conn) => {
-            let result = schema::email::emails::dsl::emails
-                .select(schema::email::emails::email)
-                .filter(schema::email::emails::email.eq(email))
+            let result = emails::dsl::emails
+                .select(emails::email)
+                .filter(emails::email.eq(email))
                 .load::<String>(&mut conn);
             match result {
                 Ok(emails) => {

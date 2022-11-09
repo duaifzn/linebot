@@ -42,4 +42,9 @@ impl Redis {
         let mut client = client_clone.write().await;
         client.sismember::<&str, &str, bool>(set, member).await
     }
+    pub async fn srem(&self, set: &str, member: &str) -> RedisResult<bool>{
+        let client_clone = Arc::clone(&self.client);
+        let mut client = client_clone.write().await;
+        client.srem::<&str, &str, bool>(set, member).await
+    }
 }
