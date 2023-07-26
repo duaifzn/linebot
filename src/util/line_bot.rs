@@ -1,6 +1,6 @@
 use crate::dto::{
     line_action::Action,
-    line_dto::{EndpointInfoDto, PushDto, ReplyDto},
+    line_dto::{BroadcastDto, EndpointInfoDto, PushDto, ReplyDto},
     line_flex_message::{Bubble, Carousel, Component, Container, Flex, FlexMessage},
 };
 use base64::encode;
@@ -53,9 +53,13 @@ impl LineBot {
             .await?;
         Ok(res)
     }
-    pub async fn reply_msg<T: rocket::serde::Serialize>(&self, reply_token: Option<String>, msg: Vec<T>) {
-        if reply_token.is_none(){
-            return
+    pub async fn reply_msg<T: rocket::serde::Serialize>(
+        &self,
+        reply_token: Option<String>,
+        msg: Vec<T>,
+    ) {
+        if reply_token.is_none() {
+            return;
         }
         let body = ReplyDto {
             reply_token: reply_token.unwrap().to_string(),
@@ -81,7 +85,7 @@ impl LineBot {
         };
 
         let client = Client::new();
-        let _ = client
+        let a = client
             .post("https://api.line.me/v2/bot/message/push")
             .header(
                 header::AUTHORIZATION,
@@ -91,14 +95,13 @@ impl LineBot {
             .json(&body)
             .send()
             .await;
+        println!("{:?}", a);
     }
-    pub fn hello_layout(&self) ->FlexMessage{
-        FlexMessage::Flex(Flex{
+    pub fn hello_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
             alt_text: "hello layout.".to_string(),
             contents: Container::Carousel(Carousel {
-                contents: vec![
-                    Self::custom_bubble_and_btn_layout()
-                ],
+                contents: vec![Self::custom_bubble_and_btn_layout()],
             }),
         })
     }
@@ -139,18 +142,16 @@ impl LineBot {
         FlexMessage::Flex(Flex {
             alt_text: "sum of operation report layout.".to_string(),
             contents: Container::Carousel(Carousel {
-                contents: vec![
-                    Self::custom_bubble_layout(
-                        "累計營運報表",
-                        vec![
-                            "累計點數營運數量統計",
-                            "累計銷售情形",
-                            "銷售排行榜",
-                            "受補助企業分布",
-                            "客服及諮詢服務狀況",
-                        ],
-                    ),
-                ],
+                contents: vec![Self::custom_bubble_layout(
+                    "累計營運報表",
+                    vec![
+                        "累計點數營運數量統計",
+                        "累計銷售情形",
+                        "銷售排行榜",
+                        "受補助企業分布",
+                        "客服及諮詢服務狀況",
+                    ],
+                )],
             }),
         })
     }
@@ -158,12 +159,7 @@ impl LineBot {
         FlexMessage::Flex(Flex {
             alt_text: "presentation layout.".to_string(),
             contents: Container::Carousel(Carousel {
-                contents: vec![
-                    Self::custom_bubble_layout(
-                        "累計營運報表",
-                        vec![],
-                    ),
-                ],
+                contents: vec![Self::custom_bubble_layout("累計營運報表", vec![])],
             }),
         })
     }
@@ -231,7 +227,10 @@ impl LineBot {
                         vec![
                             // Self::custom_one_msg_btn_layout("定期營運報表"),
                             // Self::custom_one_msg_btn_layout("累計營運報表"),
-                            Self::custom_one_uri_btn_layout("成果展報表", "https://pmotcloud.kyart.tw/"),
+                            Self::custom_one_uri_btn_layout(
+                                "雲市集營運報表-定期營運報表",
+                                "https://dashboard.pmotcloud.org.tw/cloud/e1",
+                            ),
                         ],
                         Some("absolute"),
                         Some("100%"),
@@ -284,7 +283,76 @@ impl LineBot {
             .collect();
         btns
     }
-    pub fn maintain_text_layout() ->Component{
+    pub fn maintain_text_layout() -> Component {
         Component::new_text("維護中", None, None)
+    }
+    pub fn financial_report_layout() ->FlexMessage{
+        FlexMessage::Flex(Flex {
+            alt_text: "定期營運報表".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: Some(Component::new_image(
+                    "https://i.imgur.com/xrfcRvV.jpg",
+                    "full",
+                    "center",
+                    "3:1",
+                    "cover",
+                )),
+                header: None,
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_text("定期營運報表", Some("center"), None),
+                        Component::new_separator(Some("sm")),
+                        Component::new_box(
+                            "vertical",
+                            vec![Component::new_button(
+                                "link",
+                                None,
+                                Some("sm"),
+                                Action::new_uri("日報表", "https://xprooftest.com/api/report/daily"),
+                            )],
+                            None,
+                            None,
+                            None,
+                            None,
+                        ),
+                        Component::new_separator(Some("sm")),
+                        Component::new_box(
+                            "vertical",
+                            vec![Component::new_button(
+                                "link",
+                                None,
+                                Some("sm"),
+                                Action::new_uri("週報表", "https://xprooftest.com/api/report/weekly"),
+                            )],
+                            None,
+                            None,
+                            None,
+                            None,
+                        ),
+                        Component::new_separator(Some("sm")),
+                        Component::new_box(
+                            "vertical",
+                            vec![Component::new_button(
+                                "link",
+                                None,
+                                Some("sm"),
+                                Action::new_uri("月報表", "https://xprooftest.com/api/report/monthly"),
+                            )],
+                            None,
+                            None,
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    None,
+                    None,
+                )),
+                footer: None,
+            }),
+        })
+        
     }
 }
