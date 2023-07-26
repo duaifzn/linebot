@@ -1,7 +1,6 @@
 use diesel::prelude::*;
 use rocket::{serde::Deserialize, time::Time};
 use crate::schema::email::emails;
-use std::time::SystemTime;
 
 #[derive(Queryable, PartialEq, Debug)]
 pub struct Email{

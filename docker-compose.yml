@@ -6,8 +6,16 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     entrypoint: cargo run
+    volumes:
+      - ./docker/report/daily:/usr/src/myapp/report/daily
+      - ./docker/report/weekly:/usr/src/myapp/report/weekly
+      - ./docker/report/monthly:/usr/src/myapp/report/monthly
+      - /etc/timezone:/etc/timezone:ro 
+      - /etc/localtime:/etc/localtime:ro
     ports: 
       - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
     networks:
       - linebot
 
@@ -22,20 +30,20 @@ services:
     networks:
       - linebot
 
-    linebot_mysql:
-      container_name: linebot_mysql
-      image: mysql:8.0.31
-      environment:
-        - "MYSQL_ROOT_PASSWORD=!qaz@wsx123"
-        - "MYSQL_DATABASE=linebot"
-        - "MYSQL_USER=user"
-        - "MYSQL_PASSWORD=!qaz@wsx123"
-      volumes:
-        - "./docker/mysql:/var/lib/mysql"
-      ports:
-        - "3306:3306"
-      networks:
-        - linebot  
+  linebot_mysql:
+    container_name: linebot_mysql
+    image: mysql:8.0.31
+    environment:
+      - "MYSQL_ROOT_PASSWORD=!qaz@wsx123"
+      - "MYSQL_DATABASE=linebot"
+      - "MYSQL_USER=user"
+      - "MYSQL_PASSWORD=!qaz@wsx123"
+    volumes:
+      - "./docker/mysql:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    networks:
+      - linebot  
 networks:
   linebot:
     name: linebot

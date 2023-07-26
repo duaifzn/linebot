@@ -1,13 +1,13 @@
 use crate::dto::line_action::Action;
 use rocket::serde::{Deserialize, Serialize};
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde", tag = "type")]
 pub enum FlexMessage {
     #[serde(rename = "flex")]
     Flex(Flex),
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Flex {
     #[serde(rename = "altText")]
@@ -15,7 +15,7 @@ pub struct Flex {
     pub contents: Container,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde", tag = "type")]
 pub enum Container {
     #[serde(rename = "carousel")]
@@ -24,13 +24,13 @@ pub enum Container {
     Bubble(Bubble),
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Carousel {
     pub contents: Vec<Container>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Bubble {
     pub hero: Option<Component>,
@@ -39,7 +39,7 @@ pub struct Bubble {
     pub footer: Option<Component>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde", tag = "type")]
 pub enum Component {
     #[serde(rename = "box")]
@@ -50,6 +50,8 @@ pub enum Component {
     Image(Image),
     #[serde(rename = "text")]
     Text(Text),
+    #[serde(rename = "separator")]
+    Separator(Separator),
 }
 
 impl Component {
@@ -126,9 +128,17 @@ impl Component {
             wrap,
         })
     }
+    pub fn new_separator(margin: Option<&str>) -> Self {
+        Self::Separator(Separator {
+            margin: match margin {
+                Some(a) => Some(a.to_string()),
+                None => None,
+            },
+        })
+    }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Text {
     pub text: String,
@@ -138,7 +148,7 @@ pub struct Text {
     pub wrap: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Box {
     pub layout: String,
@@ -149,11 +159,11 @@ pub struct Box {
     pub width: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<String>,
-    #[serde(rename = "paddingAll",skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "paddingAll", skip_serializing_if = "Option::is_none")]
     pub padding_all: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Image {
     pub size: String,
@@ -165,7 +175,7 @@ pub struct Image {
     pub url: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct Button {
     pub style: String,
@@ -174,4 +184,10 @@ pub struct Button {
     pub action: Action,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(crate = "rocket::serde")]
+pub struct Separator {
+    pub margin: Option<String>,
 }

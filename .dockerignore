@@ -3,3 +3,6 @@
 .env.local
 docker-compose.local.yml
 docker-compose.yml
+/report/daily/*.pdf
+/report/weekly/*.pdf
+/report/monthly/*.pdf

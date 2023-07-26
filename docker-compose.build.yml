@@ -5,6 +5,4 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: linebot_linebot_server:1.0.1
-    ports: 
-      - "8000:8000"
+    image: linebot_linebot_server:1.0.5

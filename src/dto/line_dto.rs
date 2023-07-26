@@ -28,3 +28,9 @@ pub struct PushDto<T> {
     pub to: String,
     pub messages: Vec<T>,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct BroadcastDto<T> {
+    pub messages: Vec<T>,
+}
