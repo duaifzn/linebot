@@ -3,7 +3,7 @@ use crate::util::chrome_bot::ChromeBot;
 use crate::util::line_bot::LineBot;
 use crate::service::permission_service;
 use crate::database_pool::DatabasePool;
-use clokwerk::{AsyncJob, AsyncScheduler, Job, Scheduler, TimeUnits};
+use clokwerk::{AsyncScheduler, Job, Scheduler, TimeUnits};
 use std::{thread, time::Duration};
 
 lazy_static! {
@@ -36,7 +36,7 @@ pub fn download_financial_report() {
     }
 }
 
-pub fn broadcast_financial_report_to_group() {
+pub async fn broadcast_financial_report_to_group() {
     let mut scheduler = AsyncScheduler::new();
     scheduler.every(1.day()).at("07:00:00").run( || async {
         let db_pool = DatabasePool::connect_mysql(&CONFIG.mysql_url);
@@ -46,6 +46,7 @@ pub fn broadcast_financial_report_to_group() {
         match result {
             Ok(group_ids) => {
                 for group_id in group_ids{
+                    println!("send report layout to group id {:?}", group_id);
                     line_bot.push_msg(&group_id, vec![layout.clone()]).await;
                 }
             },
@@ -53,7 +54,7 @@ pub fn broadcast_financial_report_to_group() {
         }
     });
     loop {
-        scheduler.run_pending();
+        scheduler.run_pending().await;
         thread::sleep(Duration::from_millis(1000));
     }
 }

@@ -95,7 +95,6 @@ impl LineBot {
             .json(&body)
             .send()
             .await;
-        println!("{:?}", a);
     }
     pub fn hello_layout(&self) -> FlexMessage {
         FlexMessage::Flex(Flex {
