@@ -12,7 +12,7 @@ mod schema;
 mod service;
 mod util;
 use crate::config::Config;
-use crate::util::schedule::{broadcast_financial_report_to_group, download_financial_report};
+use crate::util::schedule::download_and_broadcast_report;
 use dotenv::dotenv;
 use rocket::tokio::spawn;
 lazy_static! {
@@ -22,8 +22,7 @@ lazy_static! {
 #[launch]
 async fn rocket() -> _ {
     dotenv().ok();
-    spawn(async { download_financial_report() });
-    spawn(async { broadcast_financial_report_to_group().await });
+    spawn(async { download_and_broadcast_report().await; });
     rocket::build()
         .mount(
             "/api",
