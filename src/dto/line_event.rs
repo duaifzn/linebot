@@ -14,7 +14,8 @@ pub struct Event{
     #[serde(rename(deserialize = "webhookEventId"))]
     pub webhook_event_id: String,
     #[serde(rename(deserialize = "deliveryContext"))]
-    pub delivery_context: DeliveryContext
+    pub delivery_context: DeliveryContext,
+    pub postback: Option<Postback>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -52,4 +53,20 @@ pub struct Source{
 pub struct DeliveryContext{
     #[serde(rename(deserialize = "isRedelivery"))]
     pub is_redelivery: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(crate = "rocket::serde")]
+pub struct Postback{
+    pub data: Option<String>,
+    pub params: Option<Params>
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(crate = "rocket::serde")]
+pub struct Params{
+    pub datetime: Option<String>,
+    #[serde(rename(deserialize = "newRichMenuAliasId"))]
+    pub new_rich_menu_alias_id: Option<String>,
+    pub status: Option<String>
 }

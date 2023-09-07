@@ -11,6 +11,7 @@ mod model;
 mod schema;
 mod service;
 mod util;
+
 use crate::config::Config;
 use crate::util::schedule::download_and_broadcast_report;
 use dotenv::dotenv;
@@ -20,7 +21,7 @@ lazy_static! {
 }
 
 #[launch]
-async fn rocket() -> _ {
+async fn rocket() -> _ {    
     dotenv().ok();
     spawn(async { download_and_broadcast_report().await; });
     rocket::build()
@@ -30,7 +31,7 @@ async fn rocket() -> _ {
                 controller::line_controller::webhook,
                 controller::report_controller::get_daily_report,
                 controller::report_controller::get_weekly_report,
-                controller::report_controller::get_monthly_report,
+                controller::report_controller::get_monthly_report
             ],
         )
         .manage(util::line_bot::LineBot::new(
@@ -41,4 +42,5 @@ async fn rocket() -> _ {
         .manage(database_pool::DatabasePool::connect_mysql(
             &CONFIG.mysql_url,
         ))
+        .manage(util::chat_process::ChatProcess::new()) 
 }

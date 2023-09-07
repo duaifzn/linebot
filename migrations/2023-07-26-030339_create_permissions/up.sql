@@ -1,5 +1,4 @@
 -- Your SQL goes here
--- Your SQL goes here
 CREATE TABLE permissions (
     id SERIAL PRIMARY KEY,
     group_id TEXT NOT NULL,

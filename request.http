@@ -1,1 +1,1 @@
-GET http://localhost:8000/api HTTP/1.1
+GET http://localhost:8000/api/test HTTP/1.1

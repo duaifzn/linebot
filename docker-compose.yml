@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     entrypoint: cargo run
+    restart: always
     volumes:
       - ./docker/report/daily:/usr/src/myapp/report/daily
       - ./docker/report/weekly:/usr/src/myapp/report/weekly

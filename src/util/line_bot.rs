@@ -1,3 +1,4 @@
+use crate::dto::chat_process_dto::ChatProcessDto;
 use crate::dto::{
     line_action::Action,
     line_dto::{BroadcastDto, EndpointInfoDto, PushDto, ReplyDto},
@@ -275,6 +276,21 @@ impl LineBot {
             Some("10px"),
         )
     }
+    pub fn custom_one_postback_btn_layout(text: &str, data: &str) -> Component {
+        Component::new_box(
+            "vertical",
+            vec![Component::new_button(
+                "secondary",
+                None,
+                Some("sm"),
+                Action::new_postback(text, data),
+            )],
+            Some("relative"),
+            Some("100%"),
+            None,
+            Some("10px"),
+        )
+    }
     pub fn custom_many_btn_layout(texts: Vec<&str>) -> Vec<Component> {
         let btns: Vec<Component> = texts
             .into_iter()
@@ -285,7 +301,36 @@ impl LineBot {
     pub fn maintain_text_layout() -> Component {
         Component::new_text("維護中", None, None)
     }
-    pub fn financial_report_layout() ->FlexMessage{
+    pub fn financial_report_layout(
+        daily_report: bool,
+        weekly_report: bool,
+        monthly_report: bool,
+    ) -> FlexMessage {
+        let mut btns: Vec<Component> = vec![];
+        if daily_report {
+            btns.append(&mut vec![Component::new_button(
+                "link",
+                None,
+                Some("sm"),
+                Action::new_uri("日報表", "https://xprooftest.com/api/report/daily"),
+            )]);
+        }
+        if daily_report {
+            btns.append(&mut vec![Component::new_button(
+                "link",
+                None,
+                Some("sm"),
+                Action::new_uri("週報表", "https://xprooftest.com/api/report/weekly"),
+            )]);
+        }
+        if daily_report {
+            btns.append(&mut vec![Component::new_button(
+                "link",
+                None,
+                Some("sm"),
+                Action::new_uri("月報表", "https://xprooftest.com/api/report/monthly"),
+            )]);
+        }
         FlexMessage::Flex(Flex {
             alt_text: "定期營運報表".to_string(),
             contents: Container::Bubble(Bubble {
@@ -304,40 +349,7 @@ impl LineBot {
                         Component::new_separator(Some("sm")),
                         Component::new_box(
                             "vertical",
-                            vec![Component::new_button(
-                                "link",
-                                None,
-                                Some("sm"),
-                                Action::new_uri("日報表", "https://xprooftest.com/api/report/daily"),
-                            )],
-                            None,
-                            None,
-                            None,
-                            None,
-                        ),
-                        Component::new_separator(Some("sm")),
-                        Component::new_box(
-                            "vertical",
-                            vec![Component::new_button(
-                                "link",
-                                None,
-                                Some("sm"),
-                                Action::new_uri("週報表", "https://xprooftest.com/api/report/weekly"),
-                            )],
-                            None,
-                            None,
-                            None,
-                            None,
-                        ),
-                        Component::new_separator(Some("sm")),
-                        Component::new_box(
-                            "vertical",
-                            vec![Component::new_button(
-                                "link",
-                                None,
-                                Some("sm"),
-                                Action::new_uri("月報表", "https://xprooftest.com/api/report/monthly"),
-                            )],
+                            btns,
                             None,
                             None,
                             None,
@@ -352,6 +364,269 @@ impl LineBot {
                 footer: None,
             }),
         })
-        
+    }
+    pub fn setting_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "設定".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: None,
+                header: Some(Component::new_box(
+                    "vertical",
+                    vec![Component::new_text("設定", Some("center"), None)],
+                    None,
+                    None,
+                    None,
+                    Some("10px"),
+                )),
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_image(
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                            "full",
+                            "center",
+                            "1:2",
+                            "cover",
+                        ),
+                        Component::new_box(
+                            "vertical",
+                            vec![
+                                Self::custom_one_postback_btn_layout(
+                                    "定時寄送",
+                                    ChatProcessDto::ScheduleDelivery.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout("呼喚寄送", "a"),
+                                Self::custom_one_postback_btn_layout("其他", "b"),
+                            ],
+                            Some("absolute"),
+                            Some("100%"),
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    Some("425px"),
+                    Some("0px"),
+                )),
+                footer: None,
+            }),
+        })
+    }
+    pub fn schedule_delivery_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "設定:定時寄送".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: None,
+                header: Some(Component::new_box(
+                    "vertical",
+                    vec![Component::new_text("設定:定時寄送", Some("center"), None)],
+                    None,
+                    None,
+                    None,
+                    Some("10px"),
+                )),
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_image(
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                            "full",
+                            "center",
+                            "1:2",
+                            "cover",
+                        ),
+                        Component::new_box(
+                            "vertical",
+                            vec![
+                                Self::custom_one_postback_btn_layout(
+                                    "日報",
+                                    ChatProcessDto::DailyReport.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout(
+                                    "週報",
+                                    ChatProcessDto::WeeklyReport.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout(
+                                    "月報",
+                                    ChatProcessDto::MonthlyReport.to_string().as_str(),
+                                ),
+                            ],
+                            Some("absolute"),
+                            Some("100%"),
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    Some("425px"),
+                    Some("0px"),
+                )),
+                footer: None,
+            }),
+        })
+    }
+    pub fn daily_report_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "設定:定時寄送:日報".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: None,
+                header: Some(Component::new_box(
+                    "vertical",
+                    vec![Component::new_text(
+                        "設定:定時寄送:日報",
+                        Some("center"),
+                        None,
+                    )],
+                    None,
+                    None,
+                    None,
+                    Some("10px"),
+                )),
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_image(
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                            "full",
+                            "center",
+                            "1:2",
+                            "cover",
+                        ),
+                        Component::new_box(
+                            "vertical",
+                            vec![
+                                Self::custom_one_postback_btn_layout(
+                                    "開",
+                                    ChatProcessDto::DailySwitchOn.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout(
+                                    "關",
+                                    ChatProcessDto::DailySwitchOff.to_string().as_str(),
+                                ),
+                            ],
+                            Some("absolute"),
+                            Some("100%"),
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    Some("425px"),
+                    Some("0px"),
+                )),
+                footer: None,
+            }),
+        })
+    }
+    pub fn weekly_report_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "設定:定時寄送:週報".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: None,
+                header: Some(Component::new_box(
+                    "vertical",
+                    vec![Component::new_text(
+                        "設定:定時寄送:週報",
+                        Some("center"),
+                        None,
+                    )],
+                    None,
+                    None,
+                    None,
+                    Some("10px"),
+                )),
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_image(
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                            "full",
+                            "center",
+                            "1:2",
+                            "cover",
+                        ),
+                        Component::new_box(
+                            "vertical",
+                            vec![
+                                Self::custom_one_postback_btn_layout(
+                                    "開",
+                                    ChatProcessDto::WeeklySwitchOn.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout(
+                                    "關",
+                                    ChatProcessDto::WeeklySwitchOff.to_string().as_str(),
+                                ),
+                            ],
+                            Some("absolute"),
+                            Some("100%"),
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    Some("425px"),
+                    Some("0px"),
+                )),
+                footer: None,
+            }),
+        })
+    }
+    pub fn monthly_report_layout(&self) -> FlexMessage {
+        FlexMessage::Flex(Flex {
+            alt_text: "設定:定時寄送:月報".to_string(),
+            contents: Container::Bubble(Bubble {
+                hero: None,
+                header: Some(Component::new_box(
+                    "vertical",
+                    vec![Component::new_text(
+                        "設定:定時寄送:月報",
+                        Some("center"),
+                        None,
+                    )],
+                    None,
+                    None,
+                    None,
+                    Some("10px"),
+                )),
+                body: Some(Component::new_box(
+                    "vertical",
+                    vec![
+                        Component::new_image(
+                            "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                            "full",
+                            "center",
+                            "1:2",
+                            "cover",
+                        ),
+                        Component::new_box(
+                            "vertical",
+                            vec![
+                                Self::custom_one_postback_btn_layout(
+                                    "開",
+                                    ChatProcessDto::MonthlySwitchOn.to_string().as_str(),
+                                ),
+                                Self::custom_one_postback_btn_layout(
+                                    "關",
+                                    ChatProcessDto::MonthlySwitchOff.to_string().as_str(),
+                                ),
+                            ],
+                            Some("absolute"),
+                            Some("100%"),
+                            None,
+                            None,
+                        ),
+                    ],
+                    None,
+                    None,
+                    Some("425px"),
+                    Some("0px"),
+                )),
+                footer: None,
+            }),
+        })
     }
 }

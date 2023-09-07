@@ -6,7 +6,9 @@ pub enum Action {
     #[serde(rename = "uri")]
     Uri(Uri),
     #[serde(rename = "message")]
-    Message(Message)
+    Message(Message),
+    #[serde(rename = "postback")]
+    Postback(Postback),
 }
 
 impl Action {
@@ -20,6 +22,12 @@ impl Action {
         Self::Message(Message{
             label: label.to_string(),
             text: text.to_string(),
+        })
+    }
+    pub fn new_postback(label: &str, data: &str) ->Self{
+        Self::Postback(Postback{
+            label: label.to_string(),
+            data: data.to_string(),
         })
     }
 }
@@ -36,4 +44,10 @@ pub struct Uri {
 pub struct Message {
     pub label: String,
     pub text: String,
+}
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(crate = "rocket::serde")]
+pub struct Postback {
+    pub label: String,
+    pub data: String,
 }
