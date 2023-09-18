@@ -1,6 +1,7 @@
 extern crate derive_more;
 use crate::database_pool::DatabasePool;
-use crate::service::permission_service::{
+use crate::dto::chat_process_dto::ChatProcessServiceDto;
+use crate::service::chat_process_service::{
     update_one_permission_of_has_daily_to_off, update_one_permission_of_has_daily_to_on,
     update_one_permission_of_has_monthly_to_off, update_one_permission_of_has_monthly_to_on,
     update_one_permission_of_has_weekly_to_off, update_one_permission_of_has_weekly_to_on,
@@ -21,7 +22,7 @@ pub enum ChatStep {
     ScheduleDelivery,
     #[display(fmt = "DAILYREPORT")]
     DailyReport,
-    #[display(fmt = "WEEKLTREPORT")]
+    #[display(fmt = "WEEKLYREPORT")]
     WeeklyReport,
     #[display(fmt = "MONTHLYREPORT")]
     MonthlyReport,
@@ -37,11 +38,18 @@ pub enum ChatStep {
     Off,
 }
 //HEAD:SETTING:SCHEDULEDELIVERY:DAILYREPORT:DAILYSWITCH
+// pub type BoxFuture<'a> = Pin<Box<dyn Future<Output = Result<bool, String>> + Send + Sync + 'a>>;
+// pub type CustomFn<'a> = Arc<
+//     dyn Fn(&'a State<LineBot>, &'a State<DatabasePool>, &'a str) -> BoxFuture<'a>
+//         + Send
+//         + Sync
+//         + 'a,
+// >;
 pub struct ChatNode<'a> {
     step_name: ChatStep,
     next: Option<Arc<Vec<Arc<ChatNode<'a>>>>>,
     action: Option<
-        Arc<dyn Fn(&State<DatabasePool>, &str) -> Result<bool, String> + Send + Sync + 'a>,
+        Arc<dyn Fn(&State<DatabasePool>, &str) -> Result<ChatProcessServiceDto, String> + Send + Sync + 'a>,
     >,
 }
 
@@ -59,7 +67,7 @@ impl<'a> ChatProcess<'a> {
         &self,
         msg: &str,
     ) -> Option<
-        Arc<dyn Fn(&State<DatabasePool>, &str) -> Result<bool, String> + Send + Sync + 'a>,
+        Arc<dyn Fn(&State<DatabasePool>, &str) -> Result<ChatProcessServiceDto, String> + Send + Sync + 'a>,
     > {
         let i: Vec<&str> = msg.split(":").collect();
         let mut head = self.head.clone();
@@ -87,7 +95,7 @@ impl<'a> ChatProcess<'a> {
             step_name: ChatStep::Head,
             next: Some(Arc::new(vec![
                 Arc::new(Self::setting_node()),
-                Arc::new(Self::verify_node()),
+                Arc::new(Self::verify_node())
             ])),
             action: None,
         })])

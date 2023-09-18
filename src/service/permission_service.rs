@@ -330,198 +330,25 @@ pub fn find_all_report_status_and_in_group(
     }
 }
 
-pub fn update_one_permission_of_has_daily_to_on(
+pub fn find_report_status_with_group_id_and_in_the_group(
     db_pool: &State<DatabasePool>,
     group_id: &str,
-) -> Result<bool, String> {
+) -> Result<ReportPermission, String> {
     let temp = db_pool.pool.get();
     match temp {
         Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .filter(permissions::group_id.eq(group_id))
-                .select(permissions::group_id)
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_daily.eq(true),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
-            }
-        }
-        Err(err) => Err(format!("{:?}", err)),
-    }
-}
-
-pub fn update_one_permission_of_has_daily_to_off(
-    db_pool: &State<DatabasePool>,
-    group_id: &str,
-) -> Result<bool, String> {
-    let temp = db_pool.pool.get();
-    match temp {
-        Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .select(permissions::group_id)
-                .filter(permissions::group_id.eq(group_id))
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_daily.eq(false),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
-            }
-        }
-        Err(err) => Err(format!("{:?}", err)),
-    }
-}
-
-pub fn update_one_permission_of_has_weekly_to_on(
-    db_pool: &State<DatabasePool>,
-    group_id: &str,
-) -> Result<bool, String> {
-    let temp = db_pool.pool.get();
-    match temp {
-        Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .select(permissions::group_id)
-                .filter(permissions::group_id.eq(group_id))
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_weekly.eq(true),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
-            }
-        }
-        Err(err) => Err(format!("{:?}", err)),
-    }
-}
-
-pub fn update_one_permission_of_has_weekly_to_off(
-    db_pool: &State<DatabasePool>,
-    group_id: &str,
-) -> Result<bool, String> {
-    let temp = db_pool.pool.get();
-    match temp {
-        Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .select(permissions::group_id)
-                .filter(permissions::group_id.eq(group_id))
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_weekly.eq(false),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
-            }
-        }
-        Err(err) => Err(format!("{:?}", err)),
-    }
-}
-
-pub fn update_one_permission_of_has_monthly_to_on(
-    db_pool: &State<DatabasePool>,
-    group_id: &str,
-) -> Result<bool, String> {
-    let temp = db_pool.pool.get();
-    match temp {
-        Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .select(permissions::group_id)
-                .filter(permissions::group_id.eq(group_id))
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_monthly.eq(true),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
-            }
-        }
-        Err(err) => Err(format!("{:?}", err)),
-    }
-}
-
-pub fn update_one_permission_of_has_monthly_to_off(
-    db_pool: &State<DatabasePool>,
-    group_id: &str,
-) -> Result<bool, String> {
-    let temp = db_pool.pool.get();
-    match temp {
-        Ok(mut conn) => {
-            let find_result = permissions::dsl::permissions
-                .select(permissions::group_id)
-                .filter(permissions::group_id.eq(group_id))
-                .load::<String>(&mut conn);
-
-            if let Ok(res) = find_result {
-                if res.len() > 0 {
-                    let result = diesel::update(permissions::dsl::permissions)
-                        .filter(permissions::group_id.eq(group_id))
-                        .set((permissions::has_monthly.eq(false),))
-                        .execute(&mut conn);
-                    match result {
-                        Ok(_) => return Ok(true),
-                        Err(err) => return Err(format!("{:?}", err)),
-                    }
-                } else {
-                    return Ok(false);
-                }
-            } else {
-                return Ok(false);
+            let find_result: Result<Vec<ReportPermission>, diesel::result::Error> =
+                permissions::dsl::permissions
+                    .filter(permissions::group_id.eq(group_id))
+                    .limit(1)
+                    .select(ReportPermission::as_select())
+                    .load::<ReportPermission>(&mut conn);
+            match find_result {
+                Ok(res) => match res.first() {
+                    Some(r) => return Ok(r.clone()),
+                    None => return Err(format!("group id not found")),
+                },
+                Err(err) => return Err(format!("{:?}", err)),
             }
         }
         Err(err) => Err(format!("{:?}", err)),

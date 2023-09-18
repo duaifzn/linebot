@@ -21,9 +21,11 @@ lazy_static! {
 }
 
 #[launch]
-async fn rocket() -> _ {    
+async fn rocket() -> _ {
     dotenv().ok();
-    spawn(async { download_and_broadcast_report().await; });
+    spawn(async {
+        download_and_broadcast_report().await;
+    });
     rocket::build()
         .mount(
             "/api",
@@ -42,5 +44,5 @@ async fn rocket() -> _ {
         .manage(database_pool::DatabasePool::connect_mysql(
             &CONFIG.mysql_url,
         ))
-        .manage(util::chat_process::ChatProcess::new()) 
+        .manage(util::chat_process::ChatProcess::new())
 }

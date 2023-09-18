@@ -96,6 +96,7 @@ impl LineBot {
             .json(&body)
             .send()
             .await;
+        println!("Push message: {:?}", a);
     }
     pub fn hello_layout(&self) -> FlexMessage {
         FlexMessage::Flex(Flex {
@@ -315,7 +316,7 @@ impl LineBot {
                 Action::new_uri("日報表", "https://xprooftest.com/api/report/daily"),
             )]);
         }
-        if daily_report {
+        if weekly_report {
             btns.append(&mut vec![Component::new_button(
                 "link",
                 None,
@@ -323,7 +324,7 @@ impl LineBot {
                 Action::new_uri("週報表", "https://xprooftest.com/api/report/weekly"),
             )]);
         }
-        if daily_report {
+        if monthly_report {
             btns.append(&mut vec![Component::new_button(
                 "link",
                 None,

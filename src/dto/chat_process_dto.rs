@@ -1,4 +1,7 @@
 use derive_more::Display;
+use rocket::serde::{Deserialize, Serialize};
+
+use crate::model::permission::ReportPermission;
 
 #[derive(Display)]
 pub enum ChatProcessDto{
@@ -12,13 +15,13 @@ pub enum ChatProcessDto{
     ScheduleDelivery,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:DAILYREPORT")]
     DailyReport,
-    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLTREPORT")]
+    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLYREPORT")]
     WeeklyReport,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:MONTHLYREPORT")]
     MonthlyReport,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:DAILYREPORT:DAILYSWITCH")]
     DailySwitch,
-    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLTREPORT:WEEKLYSWITCH")]
+    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLYREPORT:WEEKLYSWITCH")]
     WeeklySwitch,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:MONTHLYREPORT:MONTHLYSWITCH")]
     MonthlySwitch,
@@ -26,12 +29,19 @@ pub enum ChatProcessDto{
     DailySwitchOn,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:DAILYREPORT:DAILYSWITCH:OFF")]
     DailySwitchOff,
-    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLTREPORT:WEEKLYSWITCH:ON")]
+    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLYREPORT:WEEKLYSWITCH:ON")]
     WeeklySwitchOn,
-    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLTREPORT:WEEKLYSWITCH:OFF")]
+    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:WEEKLYREPORT:WEEKLYSWITCH:OFF")]
     WeeklySwitchOff,
-    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:MONTHLYREPORT:MONYHLYSWITCH:ON")]
+    #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:MONTHLYREPORT:MONTHLYSWITCH:ON")]
     MonthlySwitchOn,
     #[display(fmt = "HEAD:SETTING:SCHEDULEDELIVERY:MONTHLYREPORT:MONTHLYSWITCH:OFF")]
     MonthlySwitchOff,
-} 
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct ChatProcessServiceDto{
+    pub success: bool,
+    pub msg: Option<String>,
+}

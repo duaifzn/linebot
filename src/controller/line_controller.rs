@@ -3,6 +3,7 @@ use crate::dto::chat_process_dto::ChatProcessDto;
 use crate::dto::line_dto::WebhookDto;
 use crate::dto::line_message::{Message, Text};
 use crate::dto::linebot_message::{LineBotMessage, PeriodOfOperationReport, SumOfOperationReport};
+use crate::service::permission_service::find_report_status_with_group_id_and_in_the_group;
 use crate::service::{email_service, permission_service};
 use crate::util::chat_process::ChatProcess;
 use crate::util::line_bot::LineBot;
@@ -49,10 +50,25 @@ pub async fn webhook(
             Some(t) => match t {
                 i if i == LineBotMessage::Setting.to_string() => {
                     let a = line_bot.setting_layout();
-                    //println!("{:?}", a);
                     let _ = line_bot
                         .reply_msg(body.events[0].reply_token.clone(), vec![a])
                         .await;
+                }
+                i if i == LineBotMessage::Report.to_string() => {
+                    let report_status = find_report_status_with_group_id_and_in_the_group(
+                        db_pool,
+                        body.events[0].source.group_id.clone().unwrap().as_str(),
+                    );
+                    if let Ok(status) = report_status {
+                        let layout = LineBot::financial_report_layout(
+                            status.has_daily,
+                            status.has_weekly,
+                            status.has_monthly,
+                        );
+                        let _ = line_bot
+                            .reply_msg(body.events[0].reply_token.clone(), vec![layout])
+                            .await;
+                    }
                 }
                 _ => {}
             },
@@ -105,14 +121,19 @@ pub async fn webhook(
                                 body.events[0].source.group_id.clone().unwrap().as_str(),
                             );
                             match chat_result {
-                                Ok(r) => {
-                                    let _ = line_bot
-                                        .reply_msg(
-                                            body.events[0].reply_token.clone(),
-                                            vec![Message::Text(Text::new(r.to_string().as_str()))],
-                                        )
-                                        .await;
-                                }
+                                Ok(r) => match r.msg {
+                                    Some(m) => {
+                                        let _ = line_bot
+                                            .reply_msg(
+                                                body.events[0].reply_token.clone(),
+                                                vec![Message::Text(Text::new(
+                                                    m.to_string().as_str(),
+                                                ))],
+                                            )
+                                            .await;
+                                    }
+                                    None => {}
+                                },
                                 Err(err) => {
                                     let _ = line_bot
                                         .reply_msg(

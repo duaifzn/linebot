@@ -5,7 +5,8 @@ use headless_chrome::Tab;
 use headless_chrome::{types::PrintToPdfOptions, Browser, LaunchOptions};
 use std::error::Error;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Write, self};
+use std::process::Command;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -176,5 +177,17 @@ impl ChromeBot {
             .get_text()
             .unwrap();
         result.replace(" ", "")
+    }
+    fn kill_process(&self) -> Result<(), Box<dyn Error>> {
+        let process_id = self.browser.get_process_id();
+        if let Some(id) = process_id {
+            let result = Command::new("kill")
+                .arg("-9")
+                .arg(id.to_string())
+                .output()?;
+            io::stderr().write_all(&result.stderr)?;
+            io::stderr().write_all(b"\n")?;
+        }
+        Ok(())
     }
 }
