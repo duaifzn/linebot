@@ -5,8 +5,8 @@ use headless_chrome::Tab;
 use headless_chrome::{types::PrintToPdfOptions, Browser, LaunchOptions};
 use std::error::Error;
 use std::fs::File;
-use std::io::{Write, self};
-use std::process::Command;
+use std::io::{self, Write};
+use std::process::{Command, Stdio};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -48,6 +48,7 @@ impl ChromeBot {
         self.download_daily_report()?;
         self.download_monthly_report()?;
         self.download_weekly_report()?;
+        self.kill_zombie_process()?;
         Ok(())
     }
     fn check_auth_code(&self) -> Result<(), Box<dyn Error>> {
@@ -178,15 +179,28 @@ impl ChromeBot {
             .unwrap();
         result.replace(" ", "")
     }
-    fn kill_process(&self) -> Result<(), Box<dyn Error>> {
-        let process_id = self.browser.get_process_id();
-        if let Some(id) = process_id {
-            let result = Command::new("kill")
-                .arg("-9")
-                .arg(id.to_string())
-                .output()?;
-            io::stderr().write_all(&result.stderr)?;
-            io::stderr().write_all(b"\n")?;
+    fn kill_zombie_process(&self) -> Result<(), Box<dyn Error>> {
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg("ps aux | egrep 'Z|defunct'")
+            .output()?;
+        let output_str = String::from_utf8_lossy(&output.stdout);
+        let lines: Vec<&str> = output_str.lines().collect();
+        for line in lines {
+            let fields: Vec<&str> = line.split_whitespace().collect();
+            let state = fields[7];
+            if state == "Z" {
+                let pid = fields[1];
+                let kill_output = Command::new("kill").arg("-9").arg(pid).output();
+                match kill_output {
+                    Ok(out) => println!(
+                        "Killed zombie process with PID {}: {}",
+                        pid,
+                        String::from_utf8_lossy(&out.stdout)
+                    ),
+                    Err(err) => println!("Kill zombie process error with PID {}", pid),
+                }
+            }
         }
         Ok(())
     }
